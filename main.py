@@ -7,9 +7,7 @@ import time
 import os
 
 def main_function():
-
   debug = True
-
   load_dotenv()
 
   mqtt_username = os.getenv('mqtt_username')
@@ -18,9 +16,6 @@ def main_function():
   channel_ID = os.getenv('channel_ID')
   t_port = int(os.getenv('t_port'))
   mqtt_host = os.getenv('mqtt_host')
-
-
-  # Create the topic string.
 
   topic = "channels/" + channel_ID + "/publish"
 
@@ -55,8 +50,6 @@ def main_function():
       if debug:
         print("Other disconnection reason ACK")
 
-      
-
   #define callbacks
 
   client = paho.Client(mqtt_client_ID) 
@@ -77,7 +70,6 @@ def main_function():
     client.username_pw_set(mqtt_username, mqtt_password)
     client.connect(mqtt_host, t_port, 60)
       #expecting a callback on_connect
-    ##start loop to process received messages
     client.loop_start()
     if debug: 
       time.sleep(4)
