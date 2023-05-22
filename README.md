@@ -1,7 +1,23 @@
 # MQTT
 
-Should be good to go.
+A 'Sensor' for sending CPU and RAM usage data to ThingSpeak MQTT broker.
 
-You just need to add creds and channel ID to .env file.
+## Installation
 
-Download with "git clone https://github.com/Whiskerz1337/MQTT/"
+I'd recommend using a Kali Linux VM for this as WireShark will be useful for confirming encryption.
+
+1. Download with "git clone https://github.com/Whiskerz1337/MQTT/"
+2. Open .env (hidden file)
+3. Add your username from ThingSpeak inside the empty mqtt_username string
+4. Add your client ID (same as username) inside the empty mqtt_client_ID string
+5. Add your password from ThingSpeak inside the empty mqtt_password string
+6. Add your channel ID from ThingSpeak inside the empty channel_ID string
+7. Save the file (.env)
+
+## Usage
+
+1. Run the program with ```python main.py``` 
+2. Set the number of messages to send (must be a whole number)
+3. Set the interval between collection/messages (must be a whole number)
+4. Wait for the program to complete
+5. Check for updated data on ThingSpeak.
