@@ -6,7 +6,7 @@ A 'Sensor' for sending CPU and RAM usage data to ThingSpeak MQTT broker.
 
 I'd recommend using a Kali Linux VM for this as WireShark will be useful for confirming encryption, and git should already be installed.
 
-1. Download with ```git clone https://github.com/Whiskerz1337/MQTT/```
+1. Download with ```git clone https://github.com/Whiskerz1337/MQTT.git```
 2. Open .env (hidden file)
 3. Add your username from ThingSpeak inside the empty mqtt_username string
 4. Add your client ID (same as username) inside the empty mqtt_client_ID string
