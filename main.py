@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import paho.mqtt.publish
+import sys
 import psutil
 import paho.mqtt.client as paho
 import ssl
@@ -19,9 +20,33 @@ def main_function():
 
   topic = "channels/" + channel_ID + "/publish"
 
+  print("This program will collect CPU and RAM usage data and send the data to ThingSpeak.\n")
+  
+  data_points = int(input("How many data points would you like to send to ThingSpeak? ( 5 - 30 recommended ): \n"))
+
+  if data_points > 100:
+    print("\nNote: Setting data points to maximum of 100...\n")
+    data_points = 100
+
+  interval_time = int(input("At what interval (in seconds) would you like to collect and send data ( 1 - 10 recommended ): \n"))
+
+  if interval_time > 60:
+    print("\nNote: Setting interval to maximum of 60 seconds...\n")
+    interval_time = 60
+
+  if interval_time > 10:
+    print("Warning: Greater than 10 second delay added\n")
+    match input("Proceed with long delay y/n: \n"):
+      case 'n' | 'N' | 'no' | 'No' | 'NO':
+        interval_time = int(input("\nAt what interval (in seconds) would you like to collect and send data ( 1 - 10 recommended ): \n"))
+      case 'y' | 'Y' | 'yes' | 'Yes' | 'YeS' | 'YES':
+        print(f"\nProceeding with long delay of {interval_time} seconds.")
+      case _:
+        sys.exit("\nUnexpected input. Exiting Program.")
+
   def on_message(client, userdata, message):
       if debug: 
-        print("received message =",str(message.payload.decode("utf-8")))
+        print("Sent data")
       else:
         print("<", end="")
 
@@ -70,21 +95,30 @@ def main_function():
     client.username_pw_set(mqtt_username, mqtt_password)
     client.connect(mqtt_host, t_port, 60)
       #expecting a callback on_connect
+    
     client.loop_start()
+    
     if debug: 
       time.sleep(4)
       print("Subscribing to topic",topic)
     client.subscribe(topic)
+    
     if debug: 
       time.sleep(3)
-      print("Gathering 20 secs of CPU usage data")
-    cpu_percent = psutil.cpu_percent(interval=20)
-    ram_percent = psutil.virtual_memory().percent
+      print("\nGathering " + str(data_points) + " data points of CPU and RAM usage at " + str(interval_time) + " second intervals...\n")
+      print("Use CTRL+C to cancel early if required.\n")
+
+    for i in range(data_points):  
+      cpu_percent = psutil.cpu_percent(interval=1)  
+      ram_percent = psutil.virtual_memory().percent  
+      if debug:
+          print(f"Gathering data {i+1}/{data_points}: CPU = {cpu_percent}, RAM = {ram_percent}")
+      time.sleep(interval_time)  
+
+      # Create payload
+      payload = "field1=" + str(cpu_percent) + "&field2=" + str(ram_percent)
     
-    if debug:
-      print("Sending message with payload now.")
-    payload = "field1=" + str(cpu_percent) + "&field2=" + str(ram_percent)
-    client.publish(topic, payload) #expecting a message callback after this
+      client.publish(topic, payload)  
 
   except Exception as e:
       print (e) 
